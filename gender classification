@@ -1,0 +1,48 @@
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import keras
+import matplotlib.pyplot as plt
+import cv2
+import tensorflow as tf
+print(tf.__version__)
+print(keras.__version__)
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Convolution2D
+from keras.layers import MaxPooling2D
+from keras.layers import Flatten
+from keras.models import load_model
+from keras.preprocessing import image
+from keras.utils import img_to_array
+from keras.utils import load_img
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+train_datagen = ImageDataGenerator(rescale=1./255,shear_range = 0.2,zoom_range=0.2,horizontal_flip=True)
+test_datagen = ImageDataGenerator(rescale=1./255)
+x_train = train_datagen.flow_from_directory(r'C:\Users\MUBEEN\Downloads\test',target_size=(64,64),batch_size=10,class_mode="binary")
+x_test = test_datagen.flow_from_directory(r"C:\Users\MUBEEN\Downloads\test",target_size=(64,64),batch_size=10,class_mode="binary")
+x_train.class_indices
+x_test.class_indices
+model=Sequential()
+model.add(Convolution2D(32,(3,3),input_shape=(64,64,3),activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(Convolution2D(32,(3,3),activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(Flatten())
+model.add(Dense(units=128,kernel_initializer='random_uniform',activation='relu'))
+model.add(Dense(units=128,kernel_initializer='random_uniform',activation='relu'))
+model.add(Dense(units=128,kernel_initializer='random_uniform',activation='relu'))
+model.add(Dense(units=128,kernel_initializer='random_uniform',activation='relu'))
+model.add(Dense(units=128,kernel_initializer='random_uniform',activation='relu'))
+model.add(Dense(units=1,kernel_initializer='random_uniform',activation='sigmoid'))
+model.summary()
+model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
+steps_per_epoch = len(x_train)
+validation_steps = len(x_test)
+model.fit(
+    x_train,
+    steps_per_epoch=steps_per_epoch,
+    epochs=4,
+    validation_data=x_test,
+    validation_steps=validation_steps
+)
